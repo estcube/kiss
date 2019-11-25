@@ -38,16 +38,16 @@ setuptools.setup(
     packages=['kiss'],
     package_data={'': ['LICENSE']},
     package_dir={'kiss': 'kiss'},
-    license=open('LICENSE').read(),
-    long_description=open('README.rst').read(),
+    license=open('LICENSE', encoding="utf-8").read(),
+    long_description=open('README.rst', encoding="utf-8").read(),
     url='https://github.com/ampledata/kiss',
     zip_safe=False,
     setup_requires=[
-        'coverage >= 4.4.1',
-        'nose >= 1.3.7',
-        'dummyserial >= 1.0.0',
-        'aprs > 6.9',
-        'mocket >= 1.8.2'
+        # 'coverage >= 4.4.1',
+        # 'nose >= 1.3.7',
+        # 'dummyserial >= 1.0.0',
+        # 'aprs > 6.9',
+        # 'mocket >= 1.8.2'
     ],
     install_requires=['pyserial >= 3.4'],
     classifiers=[
