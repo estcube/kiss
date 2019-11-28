@@ -31,6 +31,7 @@ class KISS(object):
     def __init__(self, strip_df_start: bool=False) -> None:
         self.strip_df_start = strip_df_start
         self.interface = None
+        self.running = False
 
     def __enter__(self):
         return self
@@ -89,6 +90,9 @@ class KISS(object):
             ])
         )
 
+    def stop_read(self):
+        self.running = False
+
     def read(self, read_bytes=None, callback=None, readmode=True):  # NOQA pylint: disable=R0912
         """
         Reads data from KISS device.
@@ -106,8 +110,13 @@ class KISS(object):
 
         read_buffer = bytes()
 
-        while 1:
-            read_data = self._read_handler(read_bytes)
+        self.running = True
+        while self.running:
+            try:
+                read_data = self._read_handler(read_bytes)
+            except TimeoutError:
+                self._logger.debug("Read timeout. Checking self.running.")
+                continue
 
             if read_data is not None and len(read_data):
                 self._logger.debug(
@@ -221,12 +230,13 @@ class TCPKISS(KISS):
         if self.interface:
             self.interface.shutdown(socket.SHUT_RDWR)
 
-    def start(self):
+    def start(self, timeout: int = 30):
         """
         Initializes the KISS device and commits configuration.
         """
         self.interface = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._logger.debug('Conntecting to %s', self.address)
+        self._logger.debug('Connecting to %s', self.address)
+        self.interface.settimeout(timeout)
         self.interface.connect(self.address)
         self._logger.info('Connected to %s', self.address)
         self._write_handler = self.interface.send
