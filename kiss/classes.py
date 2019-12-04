@@ -114,7 +114,7 @@ class KISS(object):
         while self.running:
             try:
                 read_data = self._read_handler(read_bytes)
-            except TimeoutError:
+            except socket.timeout:
                 self._logger.debug("Read timeout. Checking self.running.")
                 continue
 
