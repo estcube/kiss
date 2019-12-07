@@ -114,6 +114,10 @@ class KISS(object):
         while self.running:
             try:
                 read_data = self._read_handler(read_bytes)
+                if not read_data:
+                    self._logger.info("Received nothing from the read. Stopping KISS read process.")
+                    self.running = False
+                    break
             except socket.timeout:
                 self._logger.debug("Read timeout. Checking self.running.")
                 continue
@@ -223,12 +227,15 @@ class TCPKISS(KISS):
     def _read_handler(self, read_bytes=None):
         read_bytes = read_bytes or kiss.READ_BYTES
         read_data = self.interface.recv(read_bytes)
+        # self._logger.info(read_data)
         self._logger.debug('len(read_data)=%s', len(read_data))
         return read_data
 
     def stop(self):
         if self.interface:
             self.interface.shutdown(socket.SHUT_RDWR)
+            self.interface.close()
+            self._logger.info("KISS TCP interface closed.")
 
     def start(self, timeout: int = 30):
         """
