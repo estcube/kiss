@@ -7,7 +7,7 @@ import logging
 import socket
 
 import serial
-
+import time
 import kiss
 
 __author__ = 'Greg Albrecht W2GMD <oss@undef.net>'  # NOQA pylint: disable=R0801
@@ -111,6 +111,7 @@ class KISS(object):
         read_buffer = bytes()
 
         self.running = True
+        time.sleep(2)
         while self.running:
             try:
                 read_data = self._read_handler(read_bytes)
